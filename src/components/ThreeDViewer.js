@@ -10,7 +10,7 @@ function Model({ path }) {
 export default function ThreeDViewer({ modelPath }) {
   return (
     <div className="w-full h-[400px]">
-      <Canvas shadows camera={{ position: [3, 3, 3], fov: 50 }}>
+      <Canvas className="w-full h-full object-contain" shadows camera={{ position: [3, 3, 3], fov: 50 }}>
         <Stage environment="city" intensity={0.6}>
           <Model path={modelPath} />
         </Stage>
