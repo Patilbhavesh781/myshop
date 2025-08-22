@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import Toast from "../components/Toast"; // ✅ import toast
 
 export default function Cart() {
   const { cartItems, removeFromCart, clearCart } = useCart();
   const navigate = useNavigate();
+
+  const [toast, setToast] = useState({ message: "", type: "" });
 
   const totalPrice = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -13,7 +16,6 @@ export default function Cart() {
 
   return (
     <div className="min-h-screen p-6 bg-gray-50">
-      {/* Back Button */}
       <button
         onClick={() => navigate(-1)}
         className="mb-4 px-4 py-2 rounded-lg bg-white shadow hover:bg-gray-100 transition text-gray-700 text-sm"
@@ -25,7 +27,6 @@ export default function Cart() {
 
       {cartItems.length === 0 ? (
         <div className="flex flex-col items-center justify-center text-center mt-12">
-          {/* Empty Cart Illustration */}
           <img
             src="https://cdni.iconscout.com/illustration/premium/thumb/empty-cart-7359553-6010739.png"
             alt="Empty Cart"
@@ -40,7 +41,6 @@ export default function Cart() {
             Start exploring and find something you love!
           </p>
 
-          {/* Continue Shopping Button */}
           <Link
             to="/"
             className="mt-6 bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg shadow-md font-medium transition"
@@ -71,7 +71,6 @@ export default function Cart() {
               </div>
 
               <div className="flex gap-2">
-                {/* View Details Button */}
                 <Link
                   to={`/product/${item.id}`}
                   className="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600 transition text-sm"
@@ -79,9 +78,11 @@ export default function Cart() {
                   View Details
                 </Link>
 
-                {/* Remove Button */}
                 <button
-                  onClick={() => removeFromCart(item.id)}
+                  onClick={() => {
+                    removeFromCart(item.id);
+                    setToast({ message: `${item.name} removed from cart!`, type: "error" });
+                  }}
                   className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 transition text-sm"
                 >
                   Remove
@@ -90,7 +91,6 @@ export default function Cart() {
             </div>
           ))}
 
-          {/* Total Section */}
           <div className="mt-6 text-right border-t pt-4">
             <p className="text-xl font-bold">
               Total: ${totalPrice.toFixed(2)}
@@ -98,13 +98,15 @@ export default function Cart() {
 
             <div className="flex justify-end gap-3 mt-3">
               <button
-                onClick={clearCart}
+                onClick={() => {
+                  clearCart();
+                  setToast({ message: "Cart cleared!", type: "error" });
+                }}
                 className="bg-yellow-400 hover:bg-yellow-500 px-6 py-3 rounded-md font-semibold shadow transition"
               >
                 Clear Cart
               </button>
 
-              {/* Proceed to Checkout */}
               <button
                 onClick={() => navigate("/checkout")}
                 className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-md font-semibold shadow transition"
@@ -114,6 +116,15 @@ export default function Cart() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* ✅ Toast Notification */}
+      {toast.message && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast({ message: "", type: "" })}
+        />
       )}
     </div>
   );

@@ -1,12 +1,40 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
+import Toast from "../components/Toast";
 
 export default function Signup() {
   const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [toast, setToast] = useState("");
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      setToast("✅ Account created successfully!");
+      navigate("/"); // redirect to home after signup
+    } catch (error) {
+      setToast(`❌ ${error.message}`);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-100 via-white to-blue-100 relative overflow-hidden">
-      {/* Floating sparkles background */}
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast}
+          type={toast.includes("✅") ? "success" : "error"}
+          onClose={() => setToast("")}
+        />
+      )}
+
+      {/* Floating sparkles */}
       <motion.div
         className="absolute top-16 left-20 w-36 h-36 bg-indigo-300 rounded-full blur-3xl opacity-40"
         animate={{ y: [0, 20, 0], x: [0, 15, 0] }}
@@ -25,44 +53,49 @@ export default function Signup() {
         transition={{ duration: 0.6 }}
         className="relative bg-white/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl w-80 border border-blue-200"
       >
-        {/* Animated glowing border */}
         <div className="absolute inset-0 rounded-2xl border-2 border-transparent bg-gradient-to-r from-indigo-400 to-blue-400 opacity-70 animate-pulse -z-10"></div>
 
         <h2 className="text-3xl font-extrabold mb-6 text-center text-indigo-600 drop-shadow">
           Welcome Aboard 🚀
         </h2>
 
-        <form className="space-y-4">
+        <form onSubmit={handleSignup} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              Name
-            </label>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Name</label>
             <input
               type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               placeholder="Enter your name"
               className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-400 focus:border-indigo-500 outline-none transition"
+              required
             />
           </div>
+
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              Email
-            </label>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Email</label>
             <input
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-400 focus:border-indigo-500 outline-none transition"
+              required
             />
           </div>
+
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              Password
-            </label>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Password</label>
             <input
               type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-400 focus:border-indigo-500 outline-none transition"
+              required
             />
           </div>
+
           <motion.button
             type="submit"
             whileHover={{ scale: 1.05 }}
