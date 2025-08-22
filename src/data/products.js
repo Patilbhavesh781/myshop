@@ -51,7 +51,7 @@ const products = [
     bg: "/images/bg.jpg",
   },
   {
-    id: 5,
+    id: 6,
     name: "Silk PLA Filament",
     category: "Specialty",
     price: 29.99,
