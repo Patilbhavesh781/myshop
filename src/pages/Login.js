@@ -18,7 +18,24 @@ export default function Login() {
       setToast("✅ Logged in successfully!");
       navigate("/"); // redirect to home
     } catch (error) {
-      setToast(`❌ ${error.message}`);
+      let msg = "";
+      switch (error.code) {
+        case "Firebase: Error (auth/invalid-credential).":
+          msg = "No user found with this email.";
+          break;
+        case "auth/wrong-password":
+          msg = "Incorrect password. Please try again.";
+          break;
+        case "auth/invalid-email":
+          msg = "Invalid email format.";
+          break;
+        case "auth/missing-password":
+          msg = "Please enter your password.";
+          break;
+        default:
+          msg = "Something went wrong. Please try again.";
+      }
+      setToast(msg);
     }
   };
 
