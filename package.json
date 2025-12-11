@@ -2,6 +2,10 @@
   "name": "myshop",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
+  },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
     "@react-three/drei": "^10.7.3",
