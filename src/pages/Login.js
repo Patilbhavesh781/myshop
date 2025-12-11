@@ -4,44 +4,50 @@ import { motion } from "framer-motion";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 import Toast from "../components/Toast";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [toast, setToast] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      setToast("✅ Logged in successfully!");
-      navigate("/"); // redirect to home
+      setToast("✅ Login successful!");
+      setTimeout(() => navigate("/"), 1200);
     } catch (error) {
       let msg = "";
+
       switch (error.code) {
-        case "Firebase: Error (auth/invalid-credential).":
+        case "auth/invalid-credential":
           msg = "No user found with this email.";
           break;
         case "auth/wrong-password":
-          msg = "Incorrect password. Please try again.";
+          msg = "Incorrect password.";
           break;
         case "auth/invalid-email":
           msg = "Invalid email format.";
           break;
         case "auth/missing-password":
-          msg = "Please enter your password.";
+          msg = "Password is required.";
           break;
         default:
-          msg = "Something went wrong. Please try again.";
+          msg = "Something went wrong. Try again.";
       }
+
       setToast(msg);
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-yellow-100 via-white to-yellow-200 relative overflow-hidden">
-      {/* Toast Notification */}
+
       {toast && (
         <Toast
           message={toast}
@@ -50,7 +56,7 @@ export default function Login() {
         />
       )}
 
-      {/* Animated Glow Orbs */}
+      {/* Floating background lights */}
       <motion.div
         className="absolute top-10 left-10 w-40 h-40 bg-yellow-300 rounded-full blur-3xl opacity-40"
         animate={{ y: [0, 30, 0], x: [0, 20, 0] }}
@@ -62,13 +68,14 @@ export default function Login() {
         transition={{ duration: 10, repeat: Infinity }}
       />
 
-      {/* Login Card */}
+      {/* Login card */}
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6 }}
         className="relative bg-white/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl w-80 border border-yellow-200"
       >
+        {/* Glowing border */}
         <div className="absolute inset-0 rounded-2xl border-2 border-transparent bg-gradient-to-r from-yellow-400 to-pink-400 opacity-70 animate-pulse -z-10"></div>
 
         <h2 className="text-3xl font-extrabold mb-6 text-center text-yellow-600 drop-shadow">
@@ -76,6 +83,8 @@ export default function Login() {
         </h2>
 
         <form onSubmit={handleLogin} className="space-y-4">
+
+          {/* Email */}
           <div>
             <label className="block text-sm font-medium mb-1 text-gray-700">
               Email
@@ -90,20 +99,31 @@ export default function Login() {
             />
           </div>
 
-          <div>
+          {/* Password */}
+          <div className="relative">
             <label className="block text-sm font-medium mb-1 text-gray-700">
               Password
             </label>
+
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
-              className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 outline-none transition"
+              className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 outline-none transition pr-10"
               required
             />
+
+            {/* Password eye toggle */}
+            <span
+              className="absolute right-3 top-7 cursor-pointer text-gray-600 hover:text-gray-800"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+            </span>
           </div>
 
+          {/* Submit button */}
           <motion.button
             type="submit"
             whileHover={{ scale: 1.05 }}
@@ -114,6 +134,7 @@ export default function Login() {
           </motion.button>
         </form>
 
+        {/* Links */}
         <div className="mt-4 text-center space-y-2">
           <button
             onClick={() => navigate("/signup")}
